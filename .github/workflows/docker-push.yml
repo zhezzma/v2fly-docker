@@ -48,6 +48,7 @@ jobs:
           fi
 
       - name: Determine whether to push to DockerHub
+        # 当事件是手动触发时，设置 PUSH=true 才推送.. 如果想push的时候也推送 :(github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch')
         if: github.event_name == 'workflow_dispatch'
         run: |
           echo "PUSH=true" >> $GITHUB_ENV
