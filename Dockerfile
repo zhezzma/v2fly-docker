@@ -18,10 +18,18 @@ RUN set -ex \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
 # 修改 ENTRYPOINT，分步执行并添加调试信息
-ENTRYPOINT ["sh", "-c", "\
-    echo 'Step 1: Processing environment variables...' && \
-    envsubst < /tmp/config.json.template > /tmp/config.json && \
-    echo 'Step 2: Generated config.json content:' && \
-    cat /tmp/config.json && \
-    echo 'Step 3: Starting v2ray...' && \
-    exec /usr/bin/v2ray run -config /tmp/config.json"]
+# 启动脚本
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["echo '=== 调试信息 ==='; \
+     cat /tmp/config.json.template; \
+     echo '=== 开始处理 ==='; \
+     if [ -z \"$UUID\" ]; then \
+         echo '错误: UUID环境变量未设置'; \
+         exit 1; \
+     fi; \
+     echo \"使用UUID: $UUID\"; \
+     sed \"s/env:UUID/$UUID/g\" /tmp/config.json.template > /tmp/config.json; \
+     echo '=== 生成的配置文件 ==='; \
+     cat /tmp/config.json; \
+     echo '=== 启动V2Ray ==='; \
+     exec /usr/bin/v2ray run -config /tmp/config.json"]
