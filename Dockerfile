@@ -6,22 +6,6 @@ ARG WORKDIR=/tmp
 ARG TARGETPLATFORM
 ARG TAG
 COPY v2ray.sh "${WORKDIR}"/v2ray.sh
-COPY config.json /tmp/config.json.template
-
-
-# 添加调试：验证文件是否复制成功
-RUN echo "=== 验证文件复制 ===" && \
-    ls -la /tmp/ && \
-    echo "=== 检查 config.json.template ===" && \
-    if [ -f /tmp/config.json.template ]; then \
-        echo "✅ config.json.template 存在"; \
-        cat /tmp/config.json.template; \
-    else \
-        echo "❌ config.json.template 不存在"; \
-        echo "当前 /tmp 目录内容:"; \
-        ls -la /tmp/; \
-        exit 1; \
-    fi
 
 RUN set -ex \
     && apk add --no-cache ca-certificates gettext \
@@ -31,6 +15,9 @@ RUN set -ex \
     && ln -sf /dev/stderr /var/log/v2ray/error.log \
     && chmod +x "${WORKDIR}"/v2ray.sh \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
+
+# 要放在后面.v2ray.sh脚本可能删除/tmp目录的内容
+COPY config.json /tmp/config.json.template
 
 # 修改 ENTRYPOINT，分步执行并添加调试信息,  启动脚本
 ENTRYPOINT ["/bin/sh", "-c"]
