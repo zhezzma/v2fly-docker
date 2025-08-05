@@ -17,8 +17,7 @@ RUN set -ex \
     && chmod +x "${WORKDIR}"/v2ray.sh \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
-# 修改 ENTRYPOINT，分步执行并添加调试信息
-# 启动脚本
+# 修改 ENTRYPOINT，分步执行并添加调试信息,  启动脚本
 ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["echo '=== 调试信息 ==='; \
      cat /tmp/config.json.template; \
