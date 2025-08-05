@@ -10,7 +10,7 @@
             "settings": {
                 "clients": [
                     {
-                        "id": "$UUID",
+                        "id": "env:UUID",
                         "alterId": 0
                     }
                 ]
