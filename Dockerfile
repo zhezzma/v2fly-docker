@@ -18,4 +18,4 @@ RUN set -ex \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
 # 使用 shell 形式的 ENTRYPOINT 来执行环境变量替换
-ENTRYPOINT sh -c 'envsubst < /tmp/config.json.template > /tmp/config.json && exec /usr/bin/v2ray run -config /tmp/config.json'
+ENTRYPOINT ["sh", "-c", "envsubst < /tmp/config.json.template > /tmp/config.json && exec /usr/bin/v2ray run -config /tmp/config.json"]
