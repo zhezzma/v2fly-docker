@@ -6,9 +6,10 @@ ARG WORKDIR=/tmp
 ARG TARGETPLATFORM
 ARG TAG
 COPY v2ray.sh "${WORKDIR}"/v2ray.sh
+COPY config.json /tmp/config.json.template
 
 RUN set -ex \
-    && apk add --no-cache ca-certificates \
+    && apk add --no-cache ca-certificates gettext \
     && mkdir -p /etc/v2ray /usr/local/share/v2ray /var/log/v2ray \
     # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/v2ray/access.log \
@@ -16,4 +17,5 @@ RUN set -ex \
     && chmod +x "${WORKDIR}"/v2ray.sh \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
-ENTRYPOINT ["/usr/bin/v2ray"]
+# 使用 shell 形式的 ENTRYPOINT 来执行环境变量替换
+ENTRYPOINT sh -c 'envsubst < /tmp/config.json.template > /tmp/config.json && exec /usr/bin/v2ray run -config /tmp/config.json'
