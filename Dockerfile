@@ -17,5 +17,11 @@ RUN set -ex \
     && chmod +x "${WORKDIR}"/v2ray.sh \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
-# 使用 shell 形式的 ENTRYPOINT 来执行环境变量替换
-ENTRYPOINT ["sh", "-c", "envsubst < /tmp/config.json.template > /tmp/config.json && exec /usr/bin/v2ray run -config /tmp/config.json"]
+# 修改 ENTRYPOINT，分步执行并添加调试信息
+ENTRYPOINT ["sh", "-c", "\
+    echo 'Step 1: Processing environment variables...' && \
+    envsubst < /tmp/config.json.template > /tmp/config.json && \
+    echo 'Step 2: Generated config.json content:' && \
+    cat /tmp/config.json && \
+    echo 'Step 3: Starting v2ray...' && \
+    exec /usr/bin/v2ray run -config /tmp/config.json"]
