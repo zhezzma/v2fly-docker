@@ -5,6 +5,7 @@ WORKDIR /tmp
 ARG WORKDIR=/tmp
 ARG TARGETPLATFORM
 ARG TAG
+
 COPY v2ray.sh "${WORKDIR}"/v2ray.sh
 
 RUN set -ex \
@@ -16,10 +17,11 @@ RUN set -ex \
     && chmod +x "${WORKDIR}"/v2ray.sh \
     && "${WORKDIR}"/v2ray.sh "${TARGETPLATFORM}" "${TAG}"
 
+
 # 要放在后面.v2ray.sh脚本可能删除/tmp目录的内容
 COPY config.json /tmp/config.json.template
 
-# 修改 ENTRYPOINT，分步执行并添加调试信息,  启动脚本
+# 修改 ENTRYPOINT，分步执行并添加调试信息,开始启动脚本
 ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["echo '=== 调试信息 ==='; \
      cat /tmp/config.json.template; \
