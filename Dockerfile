@@ -8,6 +8,21 @@ ARG TAG
 COPY v2ray.sh "${WORKDIR}"/v2ray.sh
 COPY config.json /tmp/config.json.template
 
+
+# 添加调试：验证文件是否复制成功
+RUN echo "=== 验证文件复制 ===" && \
+    ls -la /tmp/ && \
+    echo "=== 检查 config.json.template ===" && \
+    if [ -f /tmp/config.json.template ]; then \
+        echo "✅ config.json.template 存在"; \
+        cat /tmp/config.json.template; \
+    else \
+        echo "❌ config.json.template 不存在"; \
+        echo "当前 /tmp 目录内容:"; \
+        ls -la /tmp/; \
+        exit 1; \
+    fi
+
 RUN set -ex \
     && apk add --no-cache ca-certificates gettext \
     && mkdir -p /etc/v2ray /usr/local/share/v2ray /var/log/v2ray \
